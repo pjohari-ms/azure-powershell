@@ -1138,8 +1138,8 @@ Test SQL throughput cmdlets using all parameter sets
 #>
 function Test-SqlThroughputCmdlets
 {
-  $AccountName = "dbaccount62-1"
-  $rgName = "CosmosDBResourceGroup62"
+  $AccountName = "throughput-bucketing-rp-test"
+  $rgName = "throughput-bucketing-rg"
   $DatabaseName = "dbName3"
   $ContainerName = "containerName"
 
@@ -1168,9 +1168,12 @@ function Test-SqlThroughputCmdlets
   $locations = @()
   $locations += New-AzCosmosDBLocationObject -LocationName "East Us" -FailoverPriority 0 -IsZoneRedundant 0
 
+  $ThroughputBucket1 = New-AzCosmosDBThroughputBucketObject -Id 1 -MaxThroughputPercentage 20
+  $ThroughputBucket2 = New-AzCosmosDBThroughputBucketObject -Id 2 -MaxThroughputPercentage 30
+
   Try{
-      $resourceGroup = New-AzResourceGroup -ResourceGroupName $rgName  -Location   $location
-      $cosmosDBAccount = New-AzCosmosDBAccount -ResourceGroupName $rgName -LocationObject $locations -Name $AccountName -ApiKind $apiKind -DefaultConsistencyLevel $consistencyLevel
+      # $resourceGroup = New-AzResourceGroup -ResourceGroupName $rgName  -Location   $location
+      # $cosmosDBAccount = New-AzCosmosDBAccount -ResourceGroupName $rgName -LocationObject $locations -Name $AccountName -ApiKind $apiKind -DefaultConsistencyLevel $consistencyLevel
 
       $NewDatabase =  New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName -Throughput  $ThroughputValue
       $Throughput = Get-AzCosmosDBSqlDatabaseThroughput -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
@@ -1198,6 +1201,19 @@ function Test-SqlThroughputCmdlets
 
       $UpdatedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ParentObject $NewDatabase -Name $ContainerName -Throughput $UpdatedContainerThroughputValue3
       Assert-AreEqual $UpdatedContainerThroughput.Throughput $UpdatedContainerThroughputValue3
+
+      # Throughput bucketing scenario
+      $UpdatedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $ContainerThroughputValue -ThroughputBuckets @($ThroughputBucket1, $ThroughputBucket2)
+      Assert-AreEqual $UpdatedContainerThroughput.Throughput $ContainerThroughputValue
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBuckets.Count 2
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBuckets[0].Id 1
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBuckets[0].MaxThroughputPercentage 20
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBuckets[1].Id 2
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBuckets[1].MaxThroughputPercentage 30
+
+      $UpdatedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $ContainerThroughputValue -ThroughputBuckets @()
+      Assert-AreEqual $UpdatedContainerThroughput.Throughput $ContainerThroughputValue
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBuckets.Count 0
 
       # autoscale scenarios
       $AutoscaleDatabase =  New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName2 -AutoscaleMaxThroughput $AutoscaleDatabaseThroughput

@@ -19,6 +19,7 @@
 -->
 
 ## Upcoming Release
+* Added `-SkipSafeRotation` switch parameter to `New-AzCosmosDBAccountKey` to bypass the account key last-usage safety check during key regeneration.
 
 ## Version 1.20.0
 * Added `-DisableLocalAuth` parameter to `New-AzCosmosDBAccount` and `Update-AzCosmosDBAccount` to opt out of local authentication.

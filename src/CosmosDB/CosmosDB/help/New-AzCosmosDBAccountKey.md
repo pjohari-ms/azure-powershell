@@ -14,22 +14,22 @@ Regenerate a given CosmosDB Account Key.
 
 ### ByNameParameterSet (Default)
 ```
-New-AzCosmosDBAccountKey -ResourceGroupName <String> -Name <String> [-KeyKind <String>] [-AsJob]
- [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm]
+New-AzCosmosDBAccountKey -ResourceGroupName <String> -Name <String> [-KeyKind <String>] [-SkipSafeRotation]
+ [-AsJob] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### ByResourceIdParameterSet
 ```
-New-AzCosmosDBAccountKey [-KeyKind <String>] -ResourceId <String> [-AsJob]
+New-AzCosmosDBAccountKey [-KeyKind <String>] -ResourceId <String> [-SkipSafeRotation] [-AsJob]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### ByObjectParameterSet
 ```
-New-AzCosmosDBAccountKey [-KeyKind <String>] -InputObject <PSDatabaseAccountGetResults> [-AsJob]
- [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm]
+New-AzCosmosDBAccountKey [-KeyKind <String>] -InputObject <PSDatabaseAccountGetResults> [-SkipSafeRotation]
+ [-AsJob] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -44,6 +44,13 @@ New-AzCosmosDBAccountKey -ResourceGroupName rg -Name dbname
 ```
 
 New keys are generated for Account with account name dbname in ResourceGroup rg.
+
+### Example 3
+```powershell
+New-AzCosmosDBAccountKey -ResourceGroupName rg -Name dbname -KeyKind "primary" -SkipSafeRotation
+```
+
+Regenerates the primary key for account dbname in ResourceGroup rg, bypassing the safe key rotation check that would otherwise block regenerating a key that was used recently.
 
 ### Example 2
 
@@ -158,6 +165,22 @@ Parameter Sets: ByResourceIdParameterSet
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipSafeRotation
+Skips the safe key rotation check that blocks regenerating a key that was used recently (within the service's last-usage window).
+When specified, the key is regenerated even if it is still in use, which may break clients that are still using that key. Use only when you understand the impact.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

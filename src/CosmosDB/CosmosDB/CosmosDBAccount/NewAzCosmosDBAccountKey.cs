@@ -39,6 +39,9 @@ namespace Microsoft.Azure.Commands.CosmosDB
         [PSArgumentCompleter("primary", "primaryReadonly", "secondary", "secondaryReadonly")]
         public string KeyKind { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = Constants.AccountSkipSafeRotationHelpMessage)]
+        public SwitchParameter SkipSafeRotation { get; set; }
+
         [Parameter(Mandatory = true, ParameterSetName = ResourceIdParameterSet, HelpMessage = Constants.ResourceIdHelpMessage)]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
@@ -68,9 +71,13 @@ namespace Microsoft.Azure.Commands.CosmosDB
                 Name = resourceIdentifier.ResourceName;
             }
 
-            if (ShouldProcess(KeyKind, string.Format("Regenerating key for Database Account:", Name)))
+            string shouldProcessAction = SkipSafeRotation.IsPresent
+                ? string.Format("Regenerating key for Database Account: {0} (skipping the key last-usage safety check)", Name)
+                : string.Format("Regenerating key for Database Account: {0}", Name);
+
+            if (ShouldProcess(KeyKind, shouldProcessAction))
             {
-                CosmosDBManagementClient.DatabaseAccounts.RegenerateKeyWithHttpMessagesAsync(ResourceGroupName, Name, new DatabaseAccountRegenerateKeyParameters{ KeyKind = KeyKind }).GetAwaiter().GetResult();
+                CosmosDBManagementClient.DatabaseAccounts.RegenerateKeyWithHttpMessagesAsync(ResourceGroupName, Name, new DatabaseAccountRegenerateKeyParameters{ KeyKind = KeyKind, SkipAccountKeysLastUsageCheck = SkipSafeRotation.IsPresent ? (bool?)true : null }).GetAwaiter().GetResult();
 
                 DatabaseAccountListKeysResult response = CosmosDBManagementClient.DatabaseAccounts.ListKeysWithHttpMessagesAsync(ResourceGroupName, Name).GetAwaiter().GetResult().Body;
                 PSDatabaseAccountListKeys databaseAccountListKeys = new PSDatabaseAccountListKeys(response);

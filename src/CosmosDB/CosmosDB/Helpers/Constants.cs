@@ -28,6 +28,8 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
 
         public const string AccountNameHelpMessage = "Name of the Cosmos DB database account.";
         public const string AccountKeyKindHelpMessage = "The access key to regenerate. Accepted values: primary, primaryReadonly, secondary, secondaryReadonly ";
+        public const string AccountSkipSafeRotationHelpMessage = "Skips the safe key rotation check that blocks regenerating a key that was used recently (within the service's last-usage window). " +
+               "When specified, the key is regenerated even if it is still in use, which may break clients that are still using that key. Use only when you understand the impact.";
         public const string AccountFailoverPolicyHelpMessage = "Array of strings having region names, ordered by failover priority. E.g eastus, westus";
         public const string AccountInstanceIdHelpMessage = "The instance Id of the CosmosDB database account. (This is returned as a part of database account properties).";
         public const string AccountObjectHelpMessage = "CosmosDB Account object";

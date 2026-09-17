@@ -38,6 +38,10 @@ namespace Microsoft.Azure.Commands.CosmosDB
         [ValidateNotNullOrEmpty]
         public int Dimensions { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = Constants.VectorEmbeddingSourceHelpMessage)]
+        [ValidateNotNull]
+        public PSEmbeddingSource EmbeddingSource { get; set; }
+
         public override void ExecuteCmdlet()
         {
             PSVectorEmbedding pSVectorEmbedding = new PSVectorEmbedding();
@@ -58,6 +62,7 @@ namespace Microsoft.Azure.Commands.CosmosDB
             }
 
             pSVectorEmbedding.Dimensions = Dimensions;
+            pSVectorEmbedding.EmbeddingSource = EmbeddingSource;
 
             WriteObject(pSVectorEmbedding);
             return;

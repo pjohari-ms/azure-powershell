@@ -170,6 +170,11 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
         public const string VectorEmbeddingDataTypeHelpMessage = "Indicates the data type of vector.";
         public const string VectorEmbeddingDistanceFunctionHelpMessage = "The distance function to use for distance calculation in between vectors.";
         public const string VectorEmbeddingDimensionsHelpMessage = "The number of dimensions in the vector.";
+        public const string VectorEmbeddingSourceHelpMessage = "The embedding source configuration used to automatically generate embeddings.";
+        public const string EmbeddingSourcePathHelpMessage = "The non-empty list of top-level source paths used to generate embeddings.";
+        public const string EmbeddingSourceEndpointHelpMessage = "The endpoint URL of the AI model provider resource.";
+        public const string EmbeddingSourceDeploymentNameHelpMessage = "The model deployment name used for generating embeddings.";
+        public const string EmbeddingSourceModelNameHelpMessage = "The name of the embedding model.";
         public const string IndexingPolicyVectorIndexHelpMessage = "Array of strings containing path to the vector field in the document.";
 
         //SQL Client Side Encryption

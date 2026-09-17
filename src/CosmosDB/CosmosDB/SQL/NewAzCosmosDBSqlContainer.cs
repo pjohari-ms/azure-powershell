@@ -100,6 +100,10 @@ namespace Microsoft.Azure.Commands.CosmosDB
         [ValidateNotNull]
         public PSSqlVectorEmbeddingPolicy vectorEmbeddingPolicy { get; set; }
 
+        [Parameter(Mandatory = false, ValueFromPipeline = true, HelpMessage = Constants.SqlFullTextPolicyHelpMessage)]
+        [ValidateNotNull]
+        public PSSqlFullTextPolicy FullTextPolicy { get; set; }
+
         [Parameter(Mandatory = false, HelpMessage = Constants.SqlContainerAnalyticalStorageTtlHelpMessage)]
         public int? AnalyticalStorageTtl { get; set; }
 
@@ -176,6 +180,11 @@ namespace Microsoft.Azure.Commands.CosmosDB
             if (vectorEmbeddingPolicy != null)
             {
                 sqlContainerResource.VectorEmbeddingPolicy = PSVectorEmbeddingPolicy.ToSDKModel(vectorEmbeddingPolicy);
+            }
+
+            if (FullTextPolicy != null)
+            {
+                sqlContainerResource.FullTextPolicy = PSSqlFullTextPolicy.ToSDKModel(FullTextPolicy);
             }
 
             if (ConflictResolutionPolicyMode != null)

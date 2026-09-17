@@ -107,6 +107,13 @@ namespace Microsoft.Azure.Commands.CosmosDB.Test.ScenarioTests.ScenarioTest
             TestRunner.RunTestScript("Test-SqlMaterializedViewCmdlets");
         }
 
+        [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSqlFullTextPolicy()
+        {
+            TestRunner.RunTestScript("Test-SqlFullTextPolicy");
+        }
+
         [Fact(Skip = "Need to make test generic for all subscriptions.")]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSqlRoleCmdlets()

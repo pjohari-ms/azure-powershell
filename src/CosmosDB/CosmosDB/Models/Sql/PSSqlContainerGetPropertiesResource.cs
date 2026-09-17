@@ -38,6 +38,9 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
             ConflictResolutionPolicy = new PSConflictResolutionPolicy(sqlContainerGetPropertiesResource.ConflictResolutionPolicy);
             AnalyticalStorageTtl = (int?)sqlContainerGetPropertiesResource.AnalyticalStorageTtl;
             MaterializedViewDefinition = new PSMaterializedViewDefinition(sqlContainerGetPropertiesResource.MaterializedViewDefinition);
+            FullTextPolicy = sqlContainerGetPropertiesResource.FullTextPolicy != null
+                ? new PSSqlFullTextPolicy(sqlContainerGetPropertiesResource.FullTextPolicy)
+                : null;
             _rid = sqlContainerGetPropertiesResource.Rid;
             _ts = sqlContainerGetPropertiesResource.Ts;
             _etag = sqlContainerGetPropertiesResource.Etag;
@@ -79,6 +82,11 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
         // Summary:
         //     Gets or sets the materializedview definition for the container.
         public PSMaterializedViewDefinition MaterializedViewDefinition { get; set; }
+
+        //
+        // Summary:
+        //     Gets or sets the full-text policy for the container.
+        public PSSqlFullTextPolicy FullTextPolicy { get; set; }
 
         //
         // Summary:

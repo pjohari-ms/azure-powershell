@@ -44,6 +44,9 @@ namespace Microsoft.Azure.Commands.CosmosDB
         [Parameter(Mandatory = false, HelpMessage = Constants.EnableMultipleWriteLocationsHelpMessage)]
         public bool? EnableMultipleWriteLocations { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = Constants.EnableEmbeddingGeneratorHelpMessage)]
+        public bool? EnableEmbeddingGenerator { get; set; }
+
         [Parameter(Mandatory = false, HelpMessage = Constants.EnableVirtualNetworkHelpMessage)]
         public bool? EnableVirtualNetwork { get; set; }
 
@@ -76,6 +79,10 @@ namespace Microsoft.Azure.Commands.CosmosDB
             if (EnableMultipleWriteLocations != null)
             {
                 databaseAccountUpdateParameters.EnableMultipleWriteLocations = EnableMultipleWriteLocations;
+            }
+            if (EnableEmbeddingGenerator != null)
+            {
+                databaseAccountUpdateParameters.EnableEmbeddingGenerator = EnableEmbeddingGenerator;
             }
             if (EnableVirtualNetwork != null)
             {

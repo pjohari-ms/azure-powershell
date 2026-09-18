@@ -19,6 +19,9 @@
 -->
 
 ## Upcoming Release
+* Added Integrated Embeddings source configuration for SQL container vector embedding policies
+    - Added `New-AzCosmosDBSqlEmbeddingSource`
+    - Added `-EmbeddingSource` to `New-AzCosmosDBSqlVectorEmbedding`
 * Added soft delete cmdlets for Cosmos DB accounts, SQL databases, and SQL containers
     - `Get-AzCosmosDBSoftDeletedAccount`: List or get soft-deleted database accounts by location
     - `Remove-AzCosmosDBSoftDeletedAccount`: Permanently purge a soft-deleted database account

@@ -51,6 +51,8 @@ ProvisioningState             : Succeeded
 Kind                          : GlobalDocumentDB
 VirtualNetworkRules           : {}
 EnableMultipleWriteLocations  : False
+PerPartitionAutomaticFailoverEnabled : False
+BackupRetentionLockExpirationTimestamp : 1/1/2030 12:00:00 AM
 NetworkAclBypass              : None
 NetworkAclBypassResourceIds   : {}
 ```

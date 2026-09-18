@@ -21,8 +21,10 @@ New-AzCosmosDBAccount [-EnableAutomaticFailover] [-EnableMultipleWriteLocations]
  [-VirtualNetworkRule <String[]>] [-VirtualNetworkRuleObject <PSVirtualNetworkRule[]>]
  [-PublicNetworkAccess <String>] [-KeyVaultKeyUri <String>] [-DisableLocalAuth <Boolean>]
  [-EnableAnalyticalStorage <Boolean>] [-EnablePartitionMerge <Boolean>] [-EnableBurstCapacity <Boolean>]
+ [-PerPartitionAutomaticFailoverEnabled <Boolean>]
  [-AsJob] [-NetworkAclBypass <String>] [-NetworkAclBypassResourceId <String[]>] [-ServerVersion <String>]
  [-BackupIntervalInMinutes <Int32>] [-BackupRetentionIntervalInHours <Int32>]
+ [-BackupRetentionLockExpirationTimestamp <DateTime>]
  [-BackupStorageRedundancy <String>] [-BackupPolicyType <String>] [-ContinuousTier <String>]
  [-AnalyticalStorageSchemaType <String>] [-MinimalTlsVersion <String>]
  [-EnablePerRegionPerPartitionAutoscale <Boolean>] [-EnablePriorityBasedExecution <Boolean>]
@@ -150,6 +152,22 @@ The time(in hours) for which each backup is retained (only for accounts with per
 
 ```yaml
 Type: System.Nullable`1[System.Int32]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -BackupRetentionLockExpirationTimestamp
+The UTC timestamp until which changes that reduce backup retention are locked.
+While active, the timestamp can only be extended.
+
+```yaml
+Type: System.Nullable`1[System.DateTime]
 Parameter Sets: (All)
 Aliases:
 
@@ -489,6 +507,21 @@ Add a location to the Cosmos DB database account. Array of PSLocation objects.
 
 ```yaml
 Type: Microsoft.Azure.Commands.CosmosDB.Models.PSLocation[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PerPartitionAutomaticFailoverEnabled
+Bool to indicate if per-partition automatic failover is enabled on the account.
+
+```yaml
+Type: System.Nullable`1[System.Boolean]
 Parameter Sets: (All)
 Aliases:
 

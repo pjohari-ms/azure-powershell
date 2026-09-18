@@ -14,7 +14,7 @@ Creates a new CosmosDB Sql VectorEmbedding object.
 
 ```
 New-AzCosmosDBSqlVectorEmbedding -Path <String> -DataType <String> -DistanceFunction <String>
- -Dimensions <Int32> [-DefaultProfile <IAzureContextContainer>] [-WhatIf]
+ -Dimensions <Int32> [-EmbeddingSource <PSEmbeddingSource>] [-DefaultProfile <IAzureContextContainer>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -32,6 +32,12 @@ New-AzCosmosDBSqlVectorEmbedding -Path "/vector1" -DataType "float32" -DistanceF
 Path DataType DistanceFunction Dimensions
 ---- -------- ---------------- ----------
 /vector1    float32     dotproduct      200
+```
+
+### Example 2: Create a vector embedding with an Integrated Embeddings source
+```powershell
+$embeddingSource = New-AzCosmosDBSqlEmbeddingSource -SourcePath "/description" -Endpoint "https://example.openai.azure.com" -DeploymentName "text-embedding-3-small" -ModelName "text-embedding-3-small"
+New-AzCosmosDBSqlVectorEmbedding -Path "/vector1" -DataType "float32" -DistanceFunction "dotproduct" -Dimensions 1536 -EmbeddingSource $embeddingSource
 ```
 
 ## PARAMETERS
@@ -96,6 +102,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -EmbeddingSource
+The embedding source configuration used to automatically generate embeddings.
+
+```yaml
+Type: Microsoft.Azure.Commands.CosmosDB.Models.PSEmbeddingSource
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Path
 The path to the vector field in the document.
 
@@ -150,7 +171,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### Microsoft.Azure.Commands.CosmosDB.Models.PSSqlVectorEmbedding
+### Microsoft.Azure.Commands.CosmosDB.Models.PSVectorEmbedding
 
 ## NOTES
 

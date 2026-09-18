@@ -285,6 +285,52 @@ function Test-SqlOperationsCmdlets
   }
 }
 
+function Test-SqlIntegratedEmbeddingSource
+{
+    $AccountName = "dbaccount30"
+    $rgName = "CosmosDBResourceGroup27"
+    $DatabaseName = "embeddingSourceDb"
+    $ContainerName = "embeddingSourceContainer"
+
+    # TODO(review-prerequisite): Confirm this existing account has Integrated Embeddings and NoSQL vector search enabled.
+    Try {
+        $NewDatabase = New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+
+        $EmbeddingSource = New-AzCosmosDBSqlEmbeddingSource -SourcePath "/description" -Endpoint "https://myaccount.services.ai.azure.com" -DeploymentName "text-embedding-3-small" -ModelName "text-embedding-3-small"
+        Assert-AreEqual $EmbeddingSource.SourcePaths[0] "/description"
+        Assert-AreEqual $EmbeddingSource.AuthType "Entra"
+
+        $VectorIndex = New-AzCosmosDBSqlVectorIndex -Path "/embedding" -Type "flat"
+        $IndexingPolicy = New-AzCosmosDBSqlIndexingPolicy -Automatic 1 -IndexingMode Consistent -VectorIndex $VectorIndex
+        $VectorEmbedding = New-AzCosmosDBSqlVectorEmbedding -Path "/embedding" -DataType "float32" -DistanceFunction "cosine" -Dimensions 1536 -EmbeddingSource $EmbeddingSource
+        $VectorEmbeddingPolicy = New-AzCosmosDBSqlVectorEmbeddingPolicy -VectorEmbedding $VectorEmbedding
+
+        $NewContainer = New-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName -PartitionKeyPath "/partitionKey" -PartitionKeyKind "Hash" -IndexingPolicy $IndexingPolicy -VectorEmbeddingPolicy $VectorEmbeddingPolicy
+        Assert-AreEqual $NewContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.Endpoint $EmbeddingSource.Endpoint
+        Assert-AreEqual $NewContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.DeploymentName $EmbeddingSource.DeploymentName
+        Assert-AreEqual $NewContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.ModelName $EmbeddingSource.ModelName
+
+        $ReadContainer = Get-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName
+        Assert-AreEqual $ReadContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.SourcePaths[0] "/description"
+        Assert-AreEqual $ReadContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.AuthType "Entra"
+
+        $UpdatedEmbeddingSource = New-AzCosmosDBSqlEmbeddingSource -SourcePath "/title" -Endpoint "https://myaccount.services.ai.azure.com" -DeploymentName "text-embedding-3-large" -ModelName "text-embedding-3-large"
+        $UpdatedVectorEmbedding = New-AzCosmosDBSqlVectorEmbedding -Path "/embedding" -DataType "float32" -DistanceFunction "cosine" -Dimensions 3072 -EmbeddingSource $UpdatedEmbeddingSource
+        $UpdatedVectorEmbeddingPolicy = New-AzCosmosDBSqlVectorEmbeddingPolicy -VectorEmbedding $UpdatedVectorEmbedding
+        $UpdatedContainer = Update-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName -VectorEmbeddingPolicy $UpdatedVectorEmbeddingPolicy
+        Assert-AreEqual $UpdatedContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.SourcePaths[0] "/title"
+        Assert-AreEqual $UpdatedContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.DeploymentName "text-embedding-3-large"
+
+        $UpdatedContainer = Update-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName -TtlInSeconds 3600
+        Assert-AreEqual $UpdatedContainer.Resource.VectorEmbeddingPolicy.VectorEmbeddings[0].EmbeddingSource.DeploymentName "text-embedding-3-large"
+
+        Remove-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+    }
+    Finally {
+        Remove-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName -ErrorAction SilentlyContinue
+    }
+}
+
 function Test-SqlInAccountRestoreOperationsCmdlets
 {
   $AccountName = "dbaccount60-5v2"

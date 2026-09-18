@@ -35,7 +35,10 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
             Path = vectorEmbedding.Path;
             DataType = vectorEmbedding.DataType;
             DistanceFunction = vectorEmbedding.DistanceFunction;
-            DataType = vectorEmbedding.DataType;
+            Dimensions = vectorEmbedding.Dimensions;
+            EmbeddingSource = vectorEmbedding.EmbeddingSource != null
+                ? new PSEmbeddingSource(vectorEmbedding.EmbeddingSource)
+                : null;
         }
         //
         // Summary:
@@ -60,6 +63,11 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
         //     The number of dimensions in the vector.
         public int Dimensions { get; set; }
 
+        //
+        // Summary:
+        //     The source configuration used to automatically generate embeddings.
+        public PSEmbeddingSource EmbeddingSource { get; set; }
+
         static public VectorEmbedding ToSDKModel(PSVectorEmbedding pSVectorEmbedding)
         {
             if (pSVectorEmbedding == null)
@@ -72,7 +80,8 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
                 Path = pSVectorEmbedding.Path,
                 DataType = pSVectorEmbedding.DataType,
                 DistanceFunction = pSVectorEmbedding.DistanceFunction,
-                Dimensions = pSVectorEmbedding.Dimensions
+                Dimensions = pSVectorEmbedding.Dimensions,
+                EmbeddingSource = PSEmbeddingSource.ToSDKModel(pSVectorEmbedding.EmbeddingSource)
             };
         }
     }

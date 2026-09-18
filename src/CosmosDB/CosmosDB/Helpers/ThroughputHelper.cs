@@ -12,8 +12,11 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-using Microsoft.Azure.Management.CosmosDB.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Azure.Commands.CosmosDB.Models;
+using Microsoft.Azure.Management.CosmosDB.Models;
 
 namespace Microsoft.Azure.Commands.CosmosDB.Helpers
 {
@@ -22,25 +25,28 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
         private static int? Throughput;
         private static int? AutoscaleMaxThroughput;
 
-        public static ThroughputSettingsUpdateParameters CreateThroughputSettingsObject(int? throughput = null, int? autoscaleMaxThroughput = null)
+        public static ThroughputSettingsUpdateParameters CreateThroughputSettingsObject(int? throughput = null, int? autoscaleMaxThroughput = null, PSThroughputBucket[] throughputBucketsObject = null)
         {
             Throughput = throughput;
             AutoscaleMaxThroughput = autoscaleMaxThroughput;
 
             ThroughputHelper.ThroughputValidation(validateBothPresent:true);
+            List<ThroughputBucketResource> throughputBuckets = ToBucketList(throughputBucketsObject);
             ThroughputSettingsUpdateParameters throughputSettingsUpdateParameters = new ThroughputSettingsUpdateParameters();
             if (throughput != null)
             {
                 throughputSettingsUpdateParameters.Resource = new ThroughputSettingsResource
                 {
-                    Throughput = throughput.Value
+                    Throughput = throughput.Value,
+                    ThroughputBuckets = throughputBuckets
                 };
             }
             else if (autoscaleMaxThroughput != null)
             {
                 throughputSettingsUpdateParameters.Resource = new ThroughputSettingsResource
                 {
-                    AutoscaleSettings = new AutoscaleSettingsResource { MaxThroughput = autoscaleMaxThroughput.Value }
+                    AutoscaleSettings = new AutoscaleSettingsResource { MaxThroughput = autoscaleMaxThroughput.Value },
+                    ThroughputBuckets = throughputBuckets
                 };
             }
 
@@ -78,6 +84,21 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
                 throw new Exception("BadRequest: Please provide either Throughput or AutoscaleMaxThroughput.");
             }
             return;
+        }
+
+        private static List<ThroughputBucketResource> ToBucketList(PSThroughputBucket[] throughputBucketsObject)
+        {
+            if (throughputBucketsObject == null)
+            {
+                return null;
+            }
+
+            return throughputBucketsObject.Select(throughputBucket => new ThroughputBucketResource
+            {
+                Id = throughputBucket.Id,
+                MaxThroughputPercentage = throughputBucket.MaxThroughputPercentage,
+                IsDefaultBucket = throughputBucket.IsDefaultBucket
+            }).ToList();
         }
 
     }

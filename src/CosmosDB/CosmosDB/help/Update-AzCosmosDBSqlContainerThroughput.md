@@ -16,22 +16,22 @@ Updates the throughput value of a CosmosDB Sql Container.
 ```
 Update-AzCosmosDBSqlContainerThroughput -DatabaseName <String> [-Name <String>] -ResourceGroupName <String>
  -AccountName <String> [-Throughput <Int32>] [-AutoscaleMaxThroughput <Int32>]
- [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-ThroughputBucketsObject <PSThroughputBucket[]>] [-DefaultProfile <IAzureContextContainer>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### ByParentObjectParameterSet
 ```
 Update-AzCosmosDBSqlContainerThroughput [-Name <String>] -ParentObject <PSSqlDatabaseGetResults>
- [-Throughput <Int32>] [-AutoscaleMaxThroughput <Int32>] [-DefaultProfile <IAzureContextContainer>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Throughput <Int32>] [-AutoscaleMaxThroughput <Int32>] [-ThroughputBucketsObject <PSThroughputBucket[]>]
+ [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByObjectParameterSet
 ```
 Update-AzCosmosDBSqlContainerThroughput [-Name <String>] -InputObject <PSSqlContainerGetResults>
- [-Throughput <Int32>] [-AutoscaleMaxThroughput <Int32>] [-DefaultProfile <IAzureContextContainer>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Throughput <Int32>] [-AutoscaleMaxThroughput <Int32>] [-ThroughputBucketsObject <PSThroughputBucket[]>]
+ [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -50,6 +50,7 @@ Id                  : /subscriptions/{mySubscriptionId}/resourceGroups/{myResour
 Throughput          : {updatedThroughputValue}
 MinimumThroughput   : 400
 OfferReplacePending :
+ThroughputBucketsObject : {{Id:1, MaxThroughputPercentage:10, IsDefaultBucket:True}, {Id:2, MaxThroughputPercentage:20, IsDefaultBucket:False}, {Id:3, MaxThroughputPercentage:15}}
 ```
 
 ### Example 2
@@ -191,6 +192,21 @@ Default value is 400.
 
 ```yaml
 Type: System.Nullable`1[System.Int32]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ThroughputBucketsObject
+Array of throughput buckets to be applied to the Cosmos DB resource.
+
+```yaml
+Type: Microsoft.Azure.Commands.CosmosDB.Models.PSThroughputBucket[]
 Parameter Sets: (All)
 Aliases:
 

@@ -39,6 +39,7 @@ Get-AzCosmosDBSqlContainerThroughput  -AccountName "accountName" -ResourceGroupN
 Throughput          : {throughputValue}
 MinimumThroughput   :
 OfferReplacePending :
+ThroughputBucketsObject : {{Id:1, MaxThroughputPercentage:10, IsDefaultBucket:True}, {Id:2, MaxThroughputPercentage:20, IsDefaultBucket:False}, {Id:3, MaxThroughputPercentage:15}}
 Id                  : 
 Name                : {Name}
 Type                : Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/throughputSettings

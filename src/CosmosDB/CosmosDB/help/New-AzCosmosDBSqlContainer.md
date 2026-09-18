@@ -20,7 +20,8 @@ New-AzCosmosDBSqlContainer -ResourceGroupName <String> -AccountName <String> -Da
  [-AutoscaleMaxThroughput <Int32>] [-TtlInSeconds <Int32>] [-UniqueKeyPolicy <PSSqlUniqueKeyPolicy>]
  [-ConflictResolutionPolicyMode <String>] [-ConflictResolutionPolicyPath <String>]
  [-ConflictResolutionPolicyProcedure <String>] [-ConflictResolutionPolicy <PSSqlConflictResolutionPolicy>]
- [-ClientEncryptionPolicy <PSSqlClientEncryptionPolicy>] [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-AnalyticalStorageTtl <Int32>]
+ [-ClientEncryptionPolicy <PSSqlClientEncryptionPolicy>] [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>]
+ [-FullTextPolicy <PSSqlFullTextPolicy>] [-AnalyticalStorageTtl <Int32>]
  [-MaterializedViewDefinition <PSMaterializedViewDefinition>] [-DefaultProfile <IAzureContextContainer>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -32,7 +33,8 @@ New-AzCosmosDBSqlContainer -Name <String> [-IndexingPolicy <PSSqlIndexingPolicy>
  [-AutoscaleMaxThroughput <Int32>] [-TtlInSeconds <Int32>] [-UniqueKeyPolicy <PSSqlUniqueKeyPolicy>]
  [-ConflictResolutionPolicyMode <String>] [-ConflictResolutionPolicyPath <String>]
  [-ConflictResolutionPolicyProcedure <String>] [-ConflictResolutionPolicy <PSSqlConflictResolutionPolicy>]
- [-ClientEncryptionPolicy <PSSqlClientEncryptionPolicy>] [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-AnalyticalStorageTtl <Int32>]
+ [-ClientEncryptionPolicy <PSSqlClientEncryptionPolicy>] [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>]
+ [-FullTextPolicy <PSSqlFullTextPolicy>] [-AnalyticalStorageTtl <Int32>]
  -ParentObject <PSSqlDatabaseGetResults> [-MaterializedViewDefinition <PSMaterializedViewDefinition>]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -199,6 +201,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FullTextPolicy
+The full-text policy for the container.
+
+```yaml
+Type: Microsoft.Azure.Commands.CosmosDB.Models.PSSqlFullTextPolicy
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 

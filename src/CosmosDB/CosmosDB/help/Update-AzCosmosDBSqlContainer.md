@@ -20,7 +20,8 @@ Update-AzCosmosDBSqlContainer -ResourceGroupName <String> -AccountName <String> 
  [-AutoscaleMaxThroughput <Int32>] [-TtlInSeconds <Int32>] [-UniqueKeyPolicy <PSSqlUniqueKeyPolicy>]
  [-ConflictResolutionPolicyMode <String>] [-ConflictResolutionPolicyPath <String>]
  [-ConflictResolutionPolicyProcedure <String>] [-ConflictResolutionPolicy <PSSqlConflictResolutionPolicy>]
- [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-AnalyticalStorageTtl <Int32>] [-MaterializedViewDefinition <PSMaterializedViewDefinition>]
+ [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-FullTextPolicy <PSSqlFullTextPolicy>]
+ [-AnalyticalStorageTtl <Int32>] [-MaterializedViewDefinition <PSMaterializedViewDefinition>]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -32,7 +33,8 @@ Update-AzCosmosDBSqlContainer [-Name <String>] [-IndexingPolicy <PSSqlIndexingPo
  [-UniqueKeyPolicy <PSSqlUniqueKeyPolicy>] [-ConflictResolutionPolicyMode <String>]
  [-ConflictResolutionPolicyPath <String>] [-ConflictResolutionPolicyProcedure <String>]
  [-ConflictResolutionPolicy <PSSqlConflictResolutionPolicy>]
- [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] -ParentObject <PSSqlDatabaseGetResults>
+ [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-FullTextPolicy <PSSqlFullTextPolicy>]
+ -ParentObject <PSSqlDatabaseGetResults>
  [-AnalyticalStorageTtl <Int32>] [-MaterializedViewDefinition <PSMaterializedViewDefinition>]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -45,7 +47,8 @@ Update-AzCosmosDBSqlContainer [-Name <String>] [-IndexingPolicy <PSSqlIndexingPo
  [-UniqueKeyPolicy <PSSqlUniqueKeyPolicy>] [-ConflictResolutionPolicyMode <String>]
  [-ConflictResolutionPolicyPath <String>] [-ConflictResolutionPolicyProcedure <String>]
  [-ConflictResolutionPolicy <PSSqlConflictResolutionPolicy>]
- [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-AnalyticalStorageTtl <Int32>]
+ [-vectorEmbeddingPolicy <PSSqlVectorEmbeddingPolicy>] [-FullTextPolicy <PSSqlFullTextPolicy>]
+ [-AnalyticalStorageTtl <Int32>]
  -InputObject <PSSqlContainerGetResults> [-MaterializedViewDefinition <PSMaterializedViewDefinition>]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -175,6 +178,21 @@ Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FullTextPolicy
+The full-text policy for the container. When omitted, the existing policy is preserved.
+
+```yaml
+Type: Microsoft.Azure.Commands.CosmosDB.Models.PSSqlFullTextPolicy
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 

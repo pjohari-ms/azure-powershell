@@ -19,6 +19,9 @@
 -->
 
 ## Upcoming Release
+* Added configurable full-text policy support for SQL containers
+    - Added `New-AzCosmosDBSqlFullTextPath`, `New-AzCosmosDBSqlFullTextSpec`, and `New-AzCosmosDBSqlFullTextPolicy`
+    - Added `-FullTextPolicy` to `New-AzCosmosDBSqlContainer` and `Update-AzCosmosDBSqlContainer`
 * Added soft delete cmdlets for Cosmos DB accounts, SQL databases, and SQL containers
     - `Get-AzCosmosDBSoftDeletedAccount`: List or get soft-deleted database accounts by location
     - `Remove-AzCosmosDBSoftDeletedAccount`: Permanently purge a soft-deleted database account

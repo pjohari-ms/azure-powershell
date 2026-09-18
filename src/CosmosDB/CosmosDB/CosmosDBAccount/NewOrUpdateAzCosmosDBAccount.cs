@@ -12,6 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
@@ -79,6 +80,9 @@ namespace Microsoft.Azure.Commands.CosmosDB
         [Parameter(Mandatory = false, HelpMessage = Constants.EnableBurstCapacityHelpMessage)]
         public bool? EnableBurstCapacity { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = Constants.PerPartitionAutomaticFailoverEnabledHelpMessage)]
+        public bool? PerPartitionAutomaticFailoverEnabled { get; set; }
+
         [Parameter(Mandatory = false, HelpMessage = Constants.AsJobHelpMessage)]
         public SwitchParameter AsJob { get; set; }
 
@@ -99,6 +103,9 @@ namespace Microsoft.Azure.Commands.CosmosDB
 
         [Parameter(Mandatory = false, HelpMessage = Constants.BackupRetentionInHoursHelpMessage)]
         public int? BackupRetentionIntervalInHours { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = Constants.BackupRetentionLockExpirationTimestampHelpMessage)]
+        public DateTime? BackupRetentionLockExpirationTimestamp { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = Constants.BackupStorageRedundancyHelpMessage)]
         [PSArgumentCompleter("Geo", "Local", "Zone")]

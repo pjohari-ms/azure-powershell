@@ -285,6 +285,48 @@ function Test-SqlOperationsCmdlets
   }
 }
 
+function Test-SqlFullTextPolicy
+{
+    $AccountName = "fulltextpolicyaccount60"
+    $rgName = "CosmosDBFullTextPolicyRg"
+    $DatabaseName = "fullTextDb"
+    $ContainerName = "fullTextContainer"
+    $location = "Central US EUAP"
+
+    Try {
+        $resourceGroup = New-AzResourceGroup -ResourceGroupName $rgName -Location $location
+        $cosmosDBAccount = New-AzCosmosDBAccount -ResourceGroupName $rgName -Name $AccountName -Location $location
+        $NewDatabase = New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+
+        $DefaultSpec = New-AzCosmosDBSqlFullTextSpec -Language "en-US" -Tokenizer "word" -Filter "lowercase","stop" -StopWordListKind "basic" -AddStopWord "cosmos" -RemoveStopWord "is","the"
+        $FullTextPath = New-AzCosmosDBSqlFullTextPath -Path "/text" -Language "en-US" -Tokenizer "word" -Filter "lowercase" -StopWordListKind "basic" -AddStopWord "cosmos" -RemoveStopWord "is"
+        $FullTextPolicy = New-AzCosmosDBSqlFullTextPolicy -DefaultLanguage "en-US" -Package "standard" -DefaultSpec $DefaultSpec -FullTextPath $FullTextPath
+
+        $NewContainer = New-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName -PartitionKeyPath "/partitionKey" -PartitionKeyKind "Hash" -FullTextPolicy $FullTextPolicy
+        Assert-AreEqual $NewContainer.Resource.FullTextPolicy.Package "standard"
+        Assert-AreEqual $NewContainer.Resource.FullTextPolicy.DefaultSpec.Tokenizer "word"
+        Assert-AreEqual $NewContainer.Resource.FullTextPolicy.FullTextPaths[0].Filters[0] "lowercase"
+
+        $UpdatedSpec = New-AzCosmosDBSqlFullTextSpec -Language "en-US" -Tokenizer "word" -Filter @() -StopWordListKind "none" -AddStopWord @() -RemoveStopWord @()
+        $UpdatedPath = New-AzCosmosDBSqlFullTextPath -Path "/text" -Language "en-US" -Tokenizer "word" -Filter @() -StopWordListKind "none" -AddStopWord @() -RemoveStopWord @()
+        $UpdatedPolicy = New-AzCosmosDBSqlFullTextPolicy -DefaultLanguage "en-US" -Package "standard" -DefaultSpec $UpdatedSpec -FullTextPath $UpdatedPath
+        $UpdatedContainer = Update-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName -FullTextPolicy $UpdatedPolicy
+        Assert-AreEqual $UpdatedContainer.Resource.FullTextPolicy.DefaultSpec.StopWordListKind "none"
+        Assert-AreEqual $UpdatedContainer.Resource.FullTextPolicy.DefaultSpec.Filters.Count 0
+        Assert-AreEqual $UpdatedContainer.Resource.FullTextPolicy.FullTextPaths[0].AddStopWords.Count 0
+
+        $ReadContainer = Get-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName
+        Assert-AreEqual $ReadContainer.Resource.FullTextPolicy.FullTextPaths[0].StopWordListKind "none"
+
+        $UpdatedContainer = Update-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName -TtlInSeconds 3600
+        Assert-AreEqual $UpdatedContainer.Resource.FullTextPolicy.Package "standard"
+        Assert-AreEqual $UpdatedContainer.Resource.FullTextPolicy.DefaultSpec.StopWordListKind "none"
+    }
+    Finally {
+        Remove-AzResourceGroup -ResourceGroupName $rgName -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Test-SqlInAccountRestoreOperationsCmdlets
 {
   $AccountName = "dbaccount60-5v2"

@@ -171,6 +171,18 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
         public const string VectorEmbeddingDistanceFunctionHelpMessage = "The distance function to use for distance calculation in between vectors.";
         public const string VectorEmbeddingDimensionsHelpMessage = "The number of dimensions in the vector.";
         public const string IndexingPolicyVectorIndexHelpMessage = "Array of strings containing path to the vector field in the document.";
+        public const string SqlFullTextPolicyHelpMessage = "The full-text policy for the container.";
+        public const string FullTextDefaultLanguageHelpMessage = "The default language inherited by full-text paths.";
+        public const string FullTextPackageHelpMessage = "The full-text package type.";
+        public const string FullTextDefaultSpecHelpMessage = "The default full-text analysis specification inherited by full-text paths.";
+        public const string FullTextPathsHelpMessage = "The list of full-text paths.";
+        public const string FullTextPathHelpMessage = "The path to the full-text field in the document.";
+        public const string FullTextLanguageHelpMessage = "The language of the full-text analysis.";
+        public const string FullTextTokenizerHelpMessage = "The tokenizer method of the full-text analysis.";
+        public const string FullTextFilterHelpMessage = "The filter pipeline of the full-text analysis.";
+        public const string FullTextStopWordListKindHelpMessage = "The built-in stop-word list used by the full-text analysis.";
+        public const string FullTextAddStopWordHelpMessage = "Custom words to add to the stop-word list.";
+        public const string FullTextRemoveStopWordHelpMessage = "Words to remove from the built-in stop-word list.";
 
         //SQL Client Side Encryption
         public const string ClientEncryptionKeyName = "Client Encryption Key name.";

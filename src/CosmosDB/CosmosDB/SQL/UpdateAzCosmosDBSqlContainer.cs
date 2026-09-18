@@ -96,6 +96,10 @@ namespace Microsoft.Azure.Commands.CosmosDB
         [ValidateNotNull]
         public PSSqlVectorEmbeddingPolicy vectorEmbeddingPolicy { get; set; }
 
+        [Parameter(Mandatory = false, ValueFromPipeline = true, HelpMessage = Constants.SqlFullTextPolicyHelpMessage)]
+        [ValidateNotNull]
+        public PSSqlFullTextPolicy FullTextPolicy { get; set; }
+
         [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = ParentObjectParameterSet, HelpMessage = Constants.SqlDatabaseObjectHelpMessage)]
         [ValidateNotNull]
         public PSSqlDatabaseGetResults ParentObject { get; set; }
@@ -194,6 +198,11 @@ namespace Microsoft.Azure.Commands.CosmosDB
                 sqlContainerResource.ConflictResolutionPolicy = conflictResolutionPolicy;
             }
 
+            if (FullTextPolicy != null)
+            {
+                sqlContainerResource.FullTextPolicy = PSSqlFullTextPolicy.ToSDKModel(FullTextPolicy);
+            }
+
             if (MaterializedViewDefinition != null)
             {
                 sqlContainerResource.MaterializedViewDefinition = PSMaterializedViewDefinition.ToSDKModel(MaterializedViewDefinition);
@@ -237,7 +246,8 @@ namespace Microsoft.Azure.Commands.CosmosDB
                 IndexingPolicy = sqlContainerGetPropertiesResource.IndexingPolicy,
                 PartitionKey = sqlContainerGetPropertiesResource.PartitionKey,
                 ClientEncryptionPolicy = sqlContainerGetPropertiesResource.ClientEncryptionPolicy,
-                VectorEmbeddingPolicy = sqlContainerGetPropertiesResource.VectorEmbeddingPolicy
+                VectorEmbeddingPolicy = sqlContainerGetPropertiesResource.VectorEmbeddingPolicy,
+                FullTextPolicy = sqlContainerGetPropertiesResource.FullTextPolicy
             };
         }
     }

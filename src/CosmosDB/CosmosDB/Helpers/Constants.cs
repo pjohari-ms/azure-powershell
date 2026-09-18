@@ -57,6 +57,7 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
         public const string EnableAnalyticalStorageHelpMessage = "Bool to indicate if AnalyticalStorage is enabled on the account.";
         public const string EnableMaterializedViewsHelpMessage = "Bool to indicate if Materializedviews is enabled on the account.";
         public const string EnableBurstCapacityHelpMessage = "Bool to indicate if Burst Capacity is enabled on the account.";
+        public const string EnableEmbeddingGeneratorHelpMessage = "Enables Integrated Embeddings on an existing API for NoSQL account with continuous backup and all versions and deletes change feed enabled.";
         public const string ServerVersionHelpMessage = "ServerVersion, valid only in case of MongoDB Accounts.";
         public const string NetworkAclBypassHelpMessage = "Whether or not Network Acl Bypass is enabled for this account for Synapse Link. Possible values include: 'None', 'AzureServices'.";
         public const string NetworkAclBypassResourceIdHelpMessage = "List of Resource Ids to allow Network Acl Bypass for Synapse Link.";

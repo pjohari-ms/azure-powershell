@@ -20,7 +20,8 @@ Update-AzCosmosDBAccount [-EnableAutomaticFailover <Boolean>] [-EnableMultipleWr
  [-MaxStalenessIntervalInSeconds <Int32>] [-MaxStalenessPrefix <Int32>] [-Tag <Hashtable>]
  [-VirtualNetworkRule <String[]>] [-VirtualNetworkRuleObject <PSVirtualNetworkRule[]>]
  [-PublicNetworkAccess <String>] [-KeyVaultKeyUri <String>] [-EnableAnalyticalStorage <Boolean>]
- [-EnableBurstCapacity <Boolean>] [-EnablePartitionMerge <Boolean>] [-EnablePriorityBasedExecution <Boolean>] [-DefaultPriorityLevel <String>]
+ [-EnableBurstCapacity <Boolean>] [-EnableEmbeddingGenerator <Boolean>] [-EnablePartitionMerge <Boolean>]
+ [-EnablePriorityBasedExecution <Boolean>] [-DefaultPriorityLevel <String>]
  [-AsJob] [-NetworkAclBypass <String>] [-NetworkAclBypassResourceId <String[]>] [-ServerVersion <String>]
  [-BackupIntervalInMinutes <Int32>] [-BackupRetentionIntervalInHours <Int32>] [-BackupStorageRedundancy <String>]
  [-BackupPolicyType <String>] [-ContinuousTier <String>] [-AnalyticalStorageSchemaType <String>] [-EnablePartitionMerge <Boolean>]
@@ -36,7 +37,8 @@ Update-AzCosmosDBAccount -ResourceId <String> [-EnableAutomaticFailover <Boolean
  [-MaxStalenessIntervalInSeconds <Int32>] [-MaxStalenessPrefix <Int32>] [-Tag <Hashtable>]
  [-VirtualNetworkRule <String[]>] [-VirtualNetworkRuleObject <PSVirtualNetworkRule[]>]
  [-PublicNetworkAccess <String>] [-KeyVaultKeyUri <String>] [-EnableAnalyticalStorage <Boolean>]
- [-EnablePartitionMerge <Boolean>] [-EnableBurstCapacity <Boolean>] [-EnablePriorityBasedExecution <Boolean>] [-DefaultPriorityLevel <String>]
+ [-EnablePartitionMerge <Boolean>] [-EnableBurstCapacity <Boolean>] [-EnableEmbeddingGenerator <Boolean>]
+ [-EnablePriorityBasedExecution <Boolean>] [-DefaultPriorityLevel <String>]
  [-AsJob] [-NetworkAclBypass <String>] [-NetworkAclBypassResourceId <String[]>] [-ServerVersion <String>]
  [-BackupIntervalInMinutes <Int32>] [-BackupRetentionIntervalInHours <Int32>] [-BackupStorageRedundancy <String>]
  [-BackupPolicyType <String>] [-ContinuousTier <String>] [-AnalyticalStorageSchemaType <String>] [-EnablePartitionMerge <Boolean>]
@@ -52,7 +54,8 @@ Update-AzCosmosDBAccount -InputObject <PSDatabaseAccountGetResults> [-EnableAuto
  [-MaxStalenessIntervalInSeconds <Int32>] [-MaxStalenessPrefix <Int32>] [-Tag <Hashtable>]
  [-VirtualNetworkRule <String[]>] [-VirtualNetworkRuleObject <PSVirtualNetworkRule[]>]
  [-PublicNetworkAccess <String>] [-KeyVaultKeyUri <String>] [-EnableAnalyticalStorage <Boolean>]
- [-EnablePartitionMerge <Boolean>] [-EnableBurstCapacity <Boolean>] [-EnablePriorityBasedExecution <Boolean>] [-DefaultPriorityLevel <String>]
+ [-EnablePartitionMerge <Boolean>] [-EnableBurstCapacity <Boolean>] [-EnableEmbeddingGenerator <Boolean>]
+ [-EnablePriorityBasedExecution <Boolean>] [-DefaultPriorityLevel <String>]
  [-AsJob] [-NetworkAclBypass <String>] [-NetworkAclBypassResourceId <String[]>] [-ServerVersion <String>]
  [-BackupIntervalInMinutes <Int32>] [-BackupRetentionIntervalInHours <Int32>] [-BackupStorageRedundancy <String>]
  [-BackupPolicyType <String>] [-ContinuousTier <String>] [-AnalyticalStorageSchemaType <String>] [-EnablePartitionMerge <Boolean>]
@@ -95,6 +98,13 @@ NetworkAclBypassResourceIds   : {}
 ```
 
 Updated DefaultConsistencyLevel to "Strong", Enabled AutomaticFailover, Enabled MultipleWriteLocations and Enabled VirtualNetwork for CosmosDB Account with name accountName. 
+
+### Example 2: Enable Integrated Embeddings
+```powershell
+Update-AzCosmosDBAccount -ResourceGroupName resourceGroupName -Name accountName -EnableEmbeddingGenerator $true
+```
+
+Enables Integrated Embeddings on an eligible API for NoSQL account.
 
 ## PARAMETERS
 
@@ -283,6 +293,21 @@ Accept wildcard characters: False
 
 ### -EnableBurstCapacity
 Bool to indicate if Burst Capacity is enabled on the account.
+
+```yaml
+Type: System.Nullable`1[System.Boolean]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -EnableEmbeddingGenerator
+Enables or disables Integrated Embeddings on an existing API for NoSQL account with continuous backup and all versions and deletes change feed enabled.
 
 ```yaml
 Type: System.Nullable`1[System.Boolean]

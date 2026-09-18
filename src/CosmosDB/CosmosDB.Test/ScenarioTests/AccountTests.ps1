@@ -27,6 +27,15 @@ function Test-AccountRelatedCmdlets
   $cosmosDBExistingAccountName = "dbaccount30" 
   $existingResourceGroupName = "CosmosDBResourceGroup27"
 
+  # TODO(review-prerequisite): Confirm this existing API for NoSQL account uses continuous backup and all versions and deletes change feed.
+  $embeddingAccount = Update-AzCosmosDBAccount -ResourceGroupName $existingResourceGroupName -Name $cosmosDBExistingAccountName -EnableEmbeddingGenerator $true
+  Assert-AreEqual $embeddingAccount.EnableEmbeddingGenerator $true
+
+  $embeddingAccount = Update-AzCosmosDBAccount -ResourceGroupName $existingResourceGroupName -Name $cosmosDBExistingAccountName -Tag @{ embeddingGenerator = "enabled" }
+  Assert-AreEqual $embeddingAccount.EnableEmbeddingGenerator $true
+
+  # TODO(review-prerequisite): Confirm the shared prerequisite account must remain enabled after this scenario rather than be deleted.
+
   $IpRule = "201.168.50.1"
   $tags = @{ name = "test"; Shape = "Square"; Color = "Blue"}
   $publicNetworkAccess = "Enabled"

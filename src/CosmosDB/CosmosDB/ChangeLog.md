@@ -19,6 +19,7 @@
 -->
 
 ## Upcoming Release
+* Added `-EnableEmbeddingGenerator` to `Update-AzCosmosDBAccount` for enabling Integrated Embeddings on eligible API for NoSQL accounts.
 * Added soft delete cmdlets for Cosmos DB accounts, SQL databases, and SQL containers
     - `Get-AzCosmosDBSoftDeletedAccount`: List or get soft-deleted database accounts by location
     - `Remove-AzCosmosDBSoftDeletedAccount`: Permanently purge a soft-deleted database account

@@ -61,6 +61,7 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
             ApiProperties = new PSApiProperties(databaseAccountGetResults.ApiProperties);
             EnableAnalyticalStorage = databaseAccountGetResults.EnableAnalyticalStorage;
             EnableBurstCapacity = databaseAccountGetResults.EnableBurstCapacity;
+            PerPartitionAutomaticFailoverEnabled = databaseAccountGetResults.PerPartitionAutomaticFailoverEnabled;
             NetworkAclBypass = databaseAccountGetResults.NetworkAclBypass;
             NetworkAclBypassResourceIds = databaseAccountGetResults.NetworkAclBypassResourceIds;
             InstanceId = databaseAccountGetResults.InstanceId;
@@ -204,6 +205,10 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
         // Summary:
         //     Gets or sets flag to indicate whether burst capacity is enabled.
         public bool? EnableBurstCapacity { get; set; }
+        //
+        // Summary:
+        //     Gets or sets flag to indicate whether per-partition automatic failover is enabled.
+        public bool? PerPartitionAutomaticFailoverEnabled { get; set; }
         //
         // Summary:
         //     Indicates the status of the Customer Managed Key feature on the account. In

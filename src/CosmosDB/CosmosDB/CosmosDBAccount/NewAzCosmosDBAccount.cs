@@ -172,6 +172,7 @@ namespace Microsoft.Azure.Commands.CosmosDB
             Collection<string> networkAclBypassResourceId = NetworkAclBypassResourceId != null ? new Collection<string>(NetworkAclBypassResourceId) : new Collection<string>();
             databaseAccountCreateUpdateParameters.NetworkAclBypassResourceIds = networkAclBypassResourceId;
             databaseAccountCreateUpdateParameters.EnableBurstCapacity = EnableBurstCapacity;
+            databaseAccountCreateUpdateParameters.PerPartitionAutomaticFailoverEnabled = PerPartitionAutomaticFailoverEnabled;
             databaseAccountCreateUpdateParameters.EnablePriorityBasedExecution = EnablePriorityBasedExecution;
             databaseAccountCreateUpdateParameters.DefaultPriorityLevel = DefaultPriorityLevel;
             databaseAccountCreateUpdateParameters.MinimalTlsVersion = MinimalTlsVersion;
@@ -274,6 +275,7 @@ namespace Microsoft.Azure.Commands.CosmosDB
 
                     databaseAccountCreateUpdateParameters.BackupPolicy = new PeriodicModeBackupPolicy()
                     {
+                        BackupRetentionLockExpirationTimestamp = BackupRetentionLockExpirationTimestamp,
                         PeriodicModeProperties = new PeriodicModeProperties()
                         {
                             BackupIntervalInMinutes = BackupIntervalInMinutes,
@@ -292,6 +294,7 @@ namespace Microsoft.Azure.Commands.CosmosDB
 
                     databaseAccountCreateUpdateParameters.BackupPolicy = new ContinuousModeBackupPolicy
                     {
+                        BackupRetentionLockExpirationTimestamp = BackupRetentionLockExpirationTimestamp,
                         ContinuousModeProperties = new ContinuousModeProperties()
                         {
                             Tier = ContinuousTier
@@ -304,10 +307,11 @@ namespace Microsoft.Azure.Commands.CosmosDB
                     return;
                 }
             }
-            else if (BackupIntervalInMinutes.HasValue || BackupRetentionIntervalInHours.HasValue || !string.IsNullOrEmpty(BackupStorageRedundancy))
+            else if (BackupIntervalInMinutes.HasValue || BackupRetentionIntervalInHours.HasValue || BackupRetentionLockExpirationTimestamp.HasValue || !string.IsNullOrEmpty(BackupStorageRedundancy))
             {
                 databaseAccountCreateUpdateParameters.BackupPolicy = new PeriodicModeBackupPolicy()
                 {
+                    BackupRetentionLockExpirationTimestamp = BackupRetentionLockExpirationTimestamp,
                     PeriodicModeProperties = new PeriodicModeProperties()
                     {
                         BackupIntervalInMinutes = BackupIntervalInMinutes,

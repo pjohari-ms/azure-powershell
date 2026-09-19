@@ -1781,3 +1781,232 @@ function Test-ClientEncryptionKeyCmdletsUsingInputObject
     Remove-AzKeyVault -VaultName $vaultName -InRemovedState -Force -Location $location
   }
 }
+
+# This test requires subscription 074d02eb-4d74-486a-b299-b262264d1536 to run
+<#
+.SYNOPSIS
+Tests SQL throughput buckets cmdlets (manual throughput)
+#>
+function Test-SqlThroughputBucketsCmdlets-ManualContainer
+{
+  $AccountName = "throughput-bucketing-rp-test1"
+  $rgName = "throughput-bucketing-rg"
+  $DatabaseName = "dbName3"
+  $ContainerName = "containerName"
+  $location = "East US"
+  $apiKind = "Sql"
+  $consistencyLevel = "BoundedStaleness"
+  $locations = @()
+  $locations += New-AzCosmosDBLocationObject -LocationName "East Us" -FailoverPriority 0 -IsZoneRedundant 0
+
+  $PartitionKeyPathValue = "/foo/bar"
+  $PartitionKeyKindValue = "Hash"
+  $ContainerThroughputValue = 800
+  $UpdatedContainerThroughputValue = 900
+
+    $ThroughputBucket1 = New-AzCosmosDBThroughputBucketObject -Id 1 -MaxThroughputPercentage 10 -IsDefaultBucket $true
+    $ThroughputBucket2 = New-AzCosmosDBThroughputBucketObject -Id 2 -MaxThroughputPercentage 20 -IsDefaultBucket $false
+    $ThroughputBucket3 = New-AzCosmosDBThroughputBucketObject -Id 3 -MaxThroughputPercentage 15
+
+  Assert-AreEqual $ThroughputBucket1.Id 1
+    Assert-AreEqual $ThroughputBucket1.MaxThroughputPercentage 10
+    Assert-AreEqual $ThroughputBucket1.IsDefaultBucket $true
+  Assert-AreEqual $ThroughputBucket2.Id 2
+    Assert-AreEqual $ThroughputBucket2.MaxThroughputPercentage 20
+  Assert-AreEqual $ThroughputBucket2.IsDefaultBucket $false
+  Assert-AreEqual $ThroughputBucket3.Id 3
+    Assert-AreEqual $ThroughputBucket3.MaxThroughputPercentage 15
+    Assert-AreEqual $ThroughputBucket3.IsDefaultBucket $null
+
+  Try{
+      $resourceGroup = New-AzResourceGroup -ResourceGroupName $rgName -Location $location
+      $cosmosDBAccount = New-AzCosmosDBAccount -ResourceGroupName $rgName -LocationObject $locations -Name $AccountName -ApiKind $apiKind -DefaultConsistencyLevel $consistencyLevel
+      $NewDatabase = New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+      $NewContainer = New-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Throughput $ContainerThroughputValue -Name $ContainerName -PartitionKeyPath $PartitionKeyPathValue -PartitionKeyKind $PartitionKeyKindValue
+
+      $UpdatedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $ContainerThroughputValue -ThroughputBucketsObject @($ThroughputBucket1, $ThroughputBucket2)
+      Assert-AreEqual $UpdatedContainerThroughput.Throughput $ContainerThroughputValue
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject.Count 2
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[0].Id 1
+    Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+    Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[0].IsDefaultBucket $true
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[1].Id 2
+    Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[1].MaxThroughputPercentage 20
+      Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[1].IsDefaultBucket $false
+
+      $UpdatedContainerThroughputNoBucketsParam = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $UpdatedContainerThroughputValue
+      Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.Throughput $UpdatedContainerThroughputValue
+      Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject.Count 2
+      Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[0].Id 1
+    Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+    Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[0].IsDefaultBucket $true
+      Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[1].Id 2
+    Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[1].MaxThroughputPercentage 20
+    Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[1].IsDefaultBucket $false
+
+      $UpdatedWithDefaultBucket = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $ContainerThroughputValue -ThroughputBucketsObject @($ThroughputBucket1, $ThroughputBucket2, $ThroughputBucket3)
+      Assert-AreEqual $UpdatedWithDefaultBucket.ThroughputBucketsObject.Count 3
+      Assert-AreEqual $UpdatedWithDefaultBucket.ThroughputBucketsObject[2].Id 3
+    Assert-AreEqual $UpdatedWithDefaultBucket.ThroughputBucketsObject[2].MaxThroughputPercentage 15
+    Assert-AreEqual $UpdatedWithDefaultBucket.ThroughputBucketsObject[2].IsDefaultBucket $null
+
+    $ThroughputBucket1NoDefault = New-AzCosmosDBThroughputBucketObject -Id 1 -MaxThroughputPercentage 10 -IsDefaultBucket $false
+    $ThroughputBucket3WithDefault = New-AzCosmosDBThroughputBucketObject -Id 3 -MaxThroughputPercentage 15 -IsDefaultBucket $true
+    $ChangedDefaultBucket = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $ContainerThroughputValue -ThroughputBucketsObject @($ThroughputBucket1NoDefault, $ThroughputBucket2, $ThroughputBucket3WithDefault)
+    Assert-AreEqual $ChangedDefaultBucket.ThroughputBucketsObject[0].IsDefaultBucket $false
+    Assert-AreEqual $ChangedDefaultBucket.ThroughputBucketsObject[2].IsDefaultBucket $true
+
+      $ClearedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -Throughput $ContainerThroughputValue -ThroughputBucketsObject @()
+      Assert-AreEqual $ClearedContainerThroughput.Throughput $ContainerThroughputValue
+      Assert-AreEqual $ClearedContainerThroughput.ThroughputBucketsObject.Count 0
+      Remove-AzCosmosDBSqlContainer -InputObject $NewContainer
+      Remove-AzCosmosDBSqlDatabase -InputObject $NewDatabase
+  }
+  Finally{
+      Remove-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName
+      Remove-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+  }
+}
+
+# This test requires subscription 074d02eb-4d74-486a-b299-b262264d1536 to run
+<#
+.SYNOPSIS
+Tests SQL throughput buckets cmdlets (autoscale throughput)
+#>
+function Test-SqlThroughputBucketsCmdlets-AutoscaleContainer
+{
+    $AccountName = "throughput-bucketing-rp-test2"
+    $rgName = "throughput-bucketing-rg"
+    $DatabaseName = "dbNameAuto"
+    $ContainerName = "containerNameAuto"
+    $location = "East US"
+    $apiKind = "Sql"
+    $consistencyLevel = "BoundedStaleness"
+    $locations = @()
+    $locations += New-AzCosmosDBLocationObject -LocationName "East Us" -FailoverPriority 0 -IsZoneRedundant 0
+
+    $PartitionKeyPathValue = "/foo/bar"
+    $PartitionKeyKindValue = "Hash"
+    $AutoscaleContainerThroughput = 5000
+    $AutoscaleUpdatedContainerThroughput = 6000
+
+    $ThroughputBucket1 = New-AzCosmosDBThroughputBucketObject -Id 1 -MaxThroughputPercentage 10 -IsDefaultBucket $true
+    $ThroughputBucket2 = New-AzCosmosDBThroughputBucketObject -Id 2 -MaxThroughputPercentage 20 -IsDefaultBucket $false
+
+    Try{
+        $resourceGroup = New-AzResourceGroup -ResourceGroupName $rgName -Location $location
+        $cosmosDBAccount = New-AzCosmosDBAccount -ResourceGroupName $rgName -LocationObject $locations -Name $AccountName -ApiKind $apiKind -DefaultConsistencyLevel $consistencyLevel
+        $NewDatabase = New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+        $NewContainer = New-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -AutoscaleMaxThroughput $AutoscaleContainerThroughput -Name $ContainerName -PartitionKeyPath $PartitionKeyPathValue -PartitionKeyKind $PartitionKeyKindValue
+
+        $UpdatedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -AutoscaleMaxThroughput $AutoscaleContainerThroughput -ThroughputBucketsObject @($ThroughputBucket1, $ThroughputBucket2)
+        Assert-AreEqual $UpdatedContainerThroughput.AutoscaleSettings.MaxThroughput $AutoscaleContainerThroughput
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject.Count 2
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[0].IsDefaultBucket $true
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[1].Id 2
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[1].MaxThroughputPercentage 20
+        Assert-AreEqual $UpdatedContainerThroughput.ThroughputBucketsObject[1].IsDefaultBucket $false
+
+        $UpdatedContainerThroughputNoBucketsParam = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -AutoscaleMaxThroughput $AutoscaleUpdatedContainerThroughput
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.AutoscaleSettings.MaxThroughput $AutoscaleUpdatedContainerThroughput
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject.Count 2
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[0].IsDefaultBucket $true
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[1].Id 2
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[1].MaxThroughputPercentage 20
+        Assert-AreEqual $UpdatedContainerThroughputNoBucketsParam.ThroughputBucketsObject[1].IsDefaultBucket $false
+
+        $ClearedContainerThroughput = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseName -Name $ContainerName -AutoscaleMaxThroughput $AutoscaleContainerThroughput -ThroughputBucketsObject @()
+        Assert-AreEqual $ClearedContainerThroughput.AutoscaleSettings.MaxThroughput $AutoscaleContainerThroughput
+        Assert-AreEqual $ClearedContainerThroughput.ThroughputBucketsObject.Count 0
+        Remove-AzCosmosDBSqlContainer -InputObject $NewContainer
+        Remove-AzCosmosDBSqlDatabase -InputObject $NewDatabase
+    }
+    Finally{
+        Remove-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseName -Name $ContainerName
+        Remove-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseName
+    }
+}
+
+# This test requires subscription 074d02eb-4d74-486a-b299-b262264d1536 to run
+<#
+.SYNOPSIS
+Validates throughput buckets are preserved during manual and autoscale throughput migrations
+#>
+function Test-SqlThroughputBucketsCmdlets-Migration
+{
+    $rgName = "throughput-bucketing-rg"
+    $AccountName = "throughput-bucketing-rp-test3"
+    $location = "East US"
+    $apiKind = "Sql"
+    $consistencyLevel = "BoundedStaleness"
+    $locations = @()
+    $locations += New-AzCosmosDBLocationObject -LocationName "East Us" -FailoverPriority 0 -IsZoneRedundant 0
+
+    $PartitionKeyPathValue = "/foo/bar"
+    $PartitionKeyKindValue = "Hash"
+    $ManualThroughput = 800
+    $AutoscaleContainerThroughput = 5000
+    $Autoscale = "Autoscale"
+    $Manual = "Manual"
+    $ThroughputBucket1 = New-AzCosmosDBThroughputBucketObject -Id 1 -MaxThroughputPercentage 10 -IsDefaultBucket $true
+    $DatabaseNameManual = "dbMigrateManual"
+    $ContainerNameManual = "containerMigrateManual"
+    $DatabaseNameAuto = "dbMigrateAuto"
+    $ContainerNameAuto = "containerMigrateAuto"
+
+    Try {
+        $resourceGroup = New-AzResourceGroup -ResourceGroupName $rgName -Location $location
+        $cosmosDBAccount = New-AzCosmosDBAccount -ResourceGroupName $rgName -LocationObject $locations -Name $AccountName -ApiKind $apiKind -DefaultConsistencyLevel $consistencyLevel
+        $NewDatabaseManual = New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseNameManual
+        $NewContainerManual = New-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseNameManual -Throughput $ManualThroughput -Name $ContainerNameManual -PartitionKeyPath $PartitionKeyPathValue -PartitionKeyKind $PartitionKeyKindValue
+
+        $UpdatedManual = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseNameManual -Name $ContainerNameManual -Throughput $ManualThroughput -ThroughputBucketsObject @($ThroughputBucket1)
+        Assert-AreEqual $UpdatedManual.ThroughputBucketsObject.Count 1
+        Assert-AreEqual $UpdatedManual.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $UpdatedManual.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $UpdatedManual.ThroughputBucketsObject[0].IsDefaultBucket $true
+        $AfterAuto = Invoke-AzCosmosDBSqlContainerThroughputMigration -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseNameManual -Name $ContainerNameManual -ThroughputType $Autoscale
+        Assert-AreEqual $AfterAuto.ThroughputBucketsObject.Count 1
+        Assert-AreEqual $AfterAuto.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $AfterAuto.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $AfterAuto.ThroughputBucketsObject[0].IsDefaultBucket $true
+        $AfterManual = Invoke-AzCosmosDBSqlContainerThroughputMigration -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseNameManual -Name $ContainerNameManual -ThroughputType $Manual
+        Assert-AreEqual $AfterManual.ThroughputBucketsObject.Count 1
+        Assert-AreEqual $AfterManual.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $AfterManual.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $AfterManual.ThroughputBucketsObject[0].IsDefaultBucket $true
+
+        $NewDatabaseAuto = New-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseNameAuto
+        $NewContainerAuto = New-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseNameAuto -AutoscaleMaxThroughput $AutoscaleContainerThroughput -Name $ContainerNameAuto -PartitionKeyPath $PartitionKeyPathValue -PartitionKeyKind $PartitionKeyKindValue
+        $UpdatedAuto = Update-AzCosmosDBSqlContainerThroughput -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseNameAuto -Name $ContainerNameAuto -AutoscaleMaxThroughput $AutoscaleContainerThroughput -ThroughputBucketsObject @($ThroughputBucket1)
+        Assert-AreEqual $UpdatedAuto.ThroughputBucketsObject.Count 1
+        Assert-AreEqual $UpdatedAuto.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $UpdatedAuto.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $UpdatedAuto.ThroughputBucketsObject[0].IsDefaultBucket $true
+        $AfterManual2 = Invoke-AzCosmosDBSqlContainerThroughputMigration -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseNameAuto -Name $ContainerNameAuto -ThroughputType $Manual
+        Assert-AreEqual $AfterManual2.ThroughputBucketsObject.Count 1
+        Assert-AreEqual $AfterManual2.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $AfterManual2.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $AfterManual2.ThroughputBucketsObject[0].IsDefaultBucket $true
+        $AfterAuto2 = Invoke-AzCosmosDBSqlContainerThroughputMigration -ResourceGroupName $rgName -AccountName $AccountName -DatabaseName $DatabaseNameAuto -Name $ContainerNameAuto -ThroughputType $Autoscale
+        Assert-AreEqual $AfterAuto2.ThroughputBucketsObject.Count 1
+        Assert-AreEqual $AfterAuto2.ThroughputBucketsObject[0].Id 1
+        Assert-AreEqual $AfterAuto2.ThroughputBucketsObject[0].MaxThroughputPercentage 10
+        Assert-AreEqual $AfterAuto2.ThroughputBucketsObject[0].IsDefaultBucket $true
+
+        Remove-AzCosmosDBSqlContainer -InputObject $NewContainerManual
+        Remove-AzCosmosDBSqlDatabase -InputObject $NewDatabaseManual
+        Remove-AzCosmosDBSqlContainer -InputObject $NewContainerAuto
+        Remove-AzCosmosDBSqlDatabase -InputObject $NewDatabaseAuto
+    }
+    Finally {
+        Remove-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseNameManual -Name $ContainerNameManual
+        Remove-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseNameManual
+        Remove-AzCosmosDBSqlContainer -AccountName $AccountName -ResourceGroupName $rgName -DatabaseName $DatabaseNameAuto -Name $ContainerNameAuto
+        Remove-AzCosmosDBSqlDatabase -AccountName $AccountName -ResourceGroupName $rgName -Name $DatabaseNameAuto
+    }
+}

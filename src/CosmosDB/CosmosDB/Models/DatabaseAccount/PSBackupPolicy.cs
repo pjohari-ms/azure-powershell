@@ -49,11 +49,15 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
             {
                 BackupPolicyMigrationState = new PSBackupPolicyMigrationState(backupPolicy.MigrationState);
             }
+
+            BackupRetentionLockExpirationTimestamp = backupPolicy.BackupRetentionLockExpirationTimestamp;
         }
 
         public int? BackupIntervalInMinutes { get; set; }
 
         public int? BackupRetentionIntervalInHours { get; set; }
+
+        public System.DateTime? BackupRetentionLockExpirationTimestamp { get; set; }
 
         public string BackupType { get; set; }
 
@@ -92,6 +96,8 @@ namespace Microsoft.Azure.Commands.CosmosDB.Models
 
                 backupPolicy = periodicModeBackupPolicy;
             }
+
+            backupPolicy.BackupRetentionLockExpirationTimestamp = BackupRetentionLockExpirationTimestamp;
 
             return backupPolicy;
         }

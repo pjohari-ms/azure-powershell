@@ -60,6 +60,7 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
         public const string EnableFreeTierHelpMessage = "Bool to indicate if FreeTier is enabled on the account.";
         public const string EnableAnalyticalStorageHelpMessage = "Bool to indicate if AnalyticalStorage is enabled on the account.";
         public const string EnableBurstCapacityHelpMessage = "Bool to indicate if Burst Capacity is enabled on the account.";
+        public const string PerPartitionAutomaticFailoverEnabledHelpMessage = "Bool to indicate if per-partition automatic failover is enabled on the account.";
         public const string ServerVersionHelpMessage = "ServerVersion, valid only in case of MongoDB Accounts.";
         public const string NetworkAclBypassHelpMessage = "Whether or not Network Acl Bypass is enabled for this account for Synapse Link. Possible values include: 'None', 'AzureServices'.";
         public const string NetworkAclBypassResourceIdHelpMessage = "List of Resource Ids to allow Network Acl Bypass for Synapse Link.";
@@ -93,6 +94,7 @@ namespace Microsoft.Azure.Commands.CosmosDB.Helpers
         public const string BackupPolicyHelpMessage = "The backup policy to indicate how the backups of the account should be taken";
         public const string BackupIntervalInMinHelpMessage = "The interval(in minutes) with which backup are taken (only for accounts with periodic mode backups)";
         public const string BackupRetentionInHoursHelpMessage = "The time(in hours) for which each backup is retained (only for accounts with periodic mode backups)";
+        public const string BackupRetentionLockExpirationTimestampHelpMessage = "The UTC timestamp until which changes that reduce backup retention are locked. While active, the timestamp can only be extended.";
         public const string BackupTypeHelpMessage = "The type of backups on the Cosmos DB account. Accepted values: Periodic, Continuous";
         public const string BackupStorageRedundancyHelpMessage = "The redundancy type of the backup Storage account";
         public const string ContinuousTierHelpMessage = "The continuous backup tier of the account";

@@ -113,6 +113,10 @@ namespace Microsoft.Azure.Commands.CosmosDB
             {
                 databaseAccountUpdateParameters.EnableBurstCapacity = EnableBurstCapacity;
             }
+            if (PerPartitionAutomaticFailoverEnabled != null)
+            {
+                databaseAccountUpdateParameters.PerPartitionAutomaticFailoverEnabled = PerPartitionAutomaticFailoverEnabled;
+            }
             if (EnablePriorityBasedExecution != null)
             {
                 databaseAccountUpdateParameters.EnablePriorityBasedExecution = EnablePriorityBasedExecution;
@@ -264,6 +268,19 @@ namespace Microsoft.Azure.Commands.CosmosDB
                         }
                     };
                 }
+            }
+
+            if (BackupRetentionLockExpirationTimestamp.HasValue)
+            {
+                BackupPolicy backupPolicy = databaseAccountUpdateParameters.BackupPolicy ?? readDatabase.BackupPolicy;
+                if (backupPolicy == null)
+                {
+                    WriteWarning("Cannot set BackupRetentionLockExpirationTimestamp when the account has no backup policy");
+                    return;
+                }
+
+                backupPolicy.BackupRetentionLockExpirationTimestamp = BackupRetentionLockExpirationTimestamp;
+                databaseAccountUpdateParameters.BackupPolicy = backupPolicy;
             }
 
             // Update analytical storage schema type.
